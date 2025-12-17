@@ -1,11 +1,37 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
+<head>
     <meta charset="UTF-8">
-    <title>MUHAMMED ALİ AKKAYA</title>
+    <title>Benim Web Sitem</title>
+    
+    <style>
+        /* 2. Kısımda verdiğim CSS kodlarını tam buraya, 
+           style etiketlerinin arasına yapıştırıyorsun */
+        .akordeon-konteyner {
+            width: 300px;
+            margin: 20px 0;
+            border: 1px solid #3498db;
+            /* ... diğer tüm CSS satırları ... */
+        }
+    </style>
 </head>
-<style>
+    <meta charset="UTF-8">
+    <title>Benim İlk Web Sitem</title><style>
     body {
+<body>
+    <h1>Web Siteme Hoş Geldiniz</h1>
+
+    <div class="akordeon-konteyner">
+        <button class="akordeon-baslik" onclick="toggleHakkimda()">
+            Hakkımda <span>+</span>
+        </button>
+        <div id="hakkimda-icerik" class="akordeon-icerik">
+            <div class="ic-yazi">
+                <p>Buraya kendi hakkındaki bilgileri yazabilirsin.</p>
+            </div>
+        </div>
+    </div>
         background-color: #f0f8ff;
         font-family: Arial, sans-serif;
         display: flex;
@@ -29,18 +55,25 @@
         background-color: #2980b9;
     }
 </style>
-<script>
-    const buton = document.querySelector('button');
-    buton.addEventListener('click', () => {
-        alert('Harika! İlk kodunu çalıştırdın.');
-    });
-</script>
+</head>
 <body>
 
     <h1>MUHAMMED ALİ AKKAYA</h1>
-    <p>WEB SAYFASI DENİYORUZ</p>
+    <p>SAYFA GELİŞME AŞAMASINDA</p>
     
-    <button>BUTON YAKINDA ÇALIŞACAK</button>
-
+    <button>BUTON</button>
+<script>
+    const buton = document.querySelector('button');
+    buton.addEventListener('click', () => {
+    alert('SAYFA BAKIMDA İLGİNİZ İÇİN TEŞEKKÜRLER');
+    });
+</script>
+<script>
+        function toggleHakkimda() {
+            /* 3. Kısımda verdiğim JavaScript kodlarını buraya yapıştır */
+        }
+    </script>
+</body>
+</html>
 </body>
 </html>
