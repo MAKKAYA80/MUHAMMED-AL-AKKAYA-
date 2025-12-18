@@ -1,79 +1,133 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<head>
     <meta charset="UTF-8">
-    <title>Benim Web Sitem</title>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muhammed Ali AKKAYA</title>
     <style>
-        /* 2. Kısımda verdiğim CSS kodlarını tam buraya, 
-           style etiketlerinin arasına yapıştırıyorsun */
-        .akordeon-konteyner {
-            width: 300px;
-            margin: 20px 0;
-            border: 1px solid #3498db;
-            /* ... diğer tüm CSS satırları ... */
+        /* ARKA PLAN AYARLARI */
+        body {
+            /* Görseli buraya bağladık */
+            background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url("unnamed.jpg");
+            background-size: cover;       /* Ekranı tam kapla */
+            background-position: center;  /* Ortala */
+            background-repeat: no-repeat; /* Tekrar etme */
+            background-attachment: fixed; /* Kaydırmada sabit kalsın */
+            
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            color: white; /* Tüm genel yazıları beyaz yapar */
+        }
+
+        h1 {
+            color: #ffffff;
+            text-shadow: 2px 2px 10px rgba(0, 0, 0, 0.8); /* Yazı okunurluğu için gölge */
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        /* ANA BUTON STİLİ */
+        .main-btn {
+            padding: 12px 25px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        .main-btn:hover {
+            background-color: #2980b9;
+        }
+
+        /* YAN MENÜ STİLİ */
+        .sidebar {
+            height: 100%;
+            width: 0;
+            position: fixed;
+            z-index: 10; /* Menü her şeyin üstünde görünsün */
+            top: 0;
+            left: 0;
+            background-color: rgba(0, 0, 0, 0.9); /* Yarı şeffaf siyah */
+            overflow-x: hidden;
+            transition: 0.5s; /* Geçiş hızı (1.5s çok yavaştı, 0.5s yapıldı) */
+            padding-top: 60px;
+        }
+
+        .sidebar a {
+            padding: 8px 8px 8px 32px;
+            text-decoration: none;
+            font-size: 25px;
+            color: #818181;
+            display: block;
+            transition: 0.3s;
+        }
+
+        .sidebar a:hover {
+            color: #2ecc71;
+        }
+
+        .sidebar .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 25px;
+            font-size: 36px;
+        }
+
+        /* MENÜYÜ AÇAN BUTON (SOL ÜST KÖŞE) */
+        .open-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 20px;
+            cursor: pointer;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 15px;
+            border: 1px solid #fff;
+            border-radius: 3px;
+            z-index: 5;
         }
     </style>
 </head>
-    <meta charset="UTF-8">
-    <title>Benim İlk Web Sitem</title><style>
-    body {
 <body>
-    <h1>Web Siteme Hoş Geldiniz</h1>
 
-    <div class="akordeon-konteyner">
-        <button class="akordeon-baslik" onclick="toggleHakkimda()">
-            Hakkımda <span>+</span>
-        </button>
-        <div id="hakkimda-icerik" class="akordeon-icerik">
-            <div class="ic-yazi">
-                <p>Buraya kendi hakkındaki bilgileri yazabilirsin.</p>
-            </div>
-        </div>
+    <button class="open-btn" onclick="toggleNav()">☰ Menü</button>
+
+    <div id="mySidebar" class="sidebar">
+        <a href="javascript:void(0)" class="close-btn" onclick="toggleNav()">&times;</a>
+        <a href="#">Anasayfa</a>
+        <a href="#">Hizmetler</a>
+        <a href="#">Projeler</a>
+        <a href="#">İletişim</a>
     </div>
-        background-color: #f0f8ff;
-        font-family: Arial, sans-serif;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        height: 100vh;
-    }
-    h1 {
-        color: #2c3e50;
-    }
-    button {
-        padding: 10px 20px;
-        background-color: #3498db;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-    button:hover {
-        background-color: #2980b9;
-    }
-</style>
-</head>
-<body>
 
     <h1>MUHAMMED ALİ AKKAYA</h1>
-    <p>SAYFA GELİŞME AŞAMASINDA</p>
-    
-    <button>BUTON</button>
-<script>
-    const buton = document.querySelector('button');
-    buton.addEventListener('click', () => {
-    alert('SAYFA BAKIMDA İLGİNİZ İÇİN TEŞEKKÜRLER');
-    });
-</script>
-<script>
-        function toggleHakkimda() {
-            /* 3. Kısımda verdiğim JavaScript kodlarını buraya yapıştır */
+    <button class="main-btn" id="uyariButon">BAKIMDA</button>
+
+    <script>
+        // Bakım uyarısı için script
+        const buton = document.getElementById('uyariButon');
+        buton.addEventListener('click', () => {
+            alert('SAYFA BAKIMDA İLGİNİZ İÇİN TEŞEKKÜRLER');
+        });
+
+        // Menü açma/kapama fonksiyonu
+        function toggleNav() {
+            var sidebar = document.getElementById("mySidebar");
+            if (sidebar.style.width === "250px") {
+                sidebar.style.width = "0";
+            } else {
+                sidebar.style.width = "250px";
+            }
         }
     </script>
-</body>
-</html>
+
 </body>
 </html>
