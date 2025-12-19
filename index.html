@@ -8,7 +8,7 @@
     
     <style>
         body {
-            background: #1a1a1a; /* Resim yoksa koyu tema */
+            background: #1a1a1a;
             background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url("unnamed.jpg");
             background-size: cover; background-position: center; background-repeat: no-repeat;
             background-attachment: fixed; margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -16,29 +16,32 @@
             height: 100vh; overflow: hidden; touch-action: none;
         }
 
+        /* Menü Butonu - Sol Üst Köşede Sabit */
         .open-btn {
             position: fixed; top: 20px; left: 20px; font-size: 16px; cursor: pointer;
             background: #2c3e50; color: white; padding: 10px 20px; border: 2px solid #fff; 
             z-index: 9999; border-radius: 5px;
         }
 
+        /* Başlat Butonu - Ortada Sabit */
+        #startBtn {
+            position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            padding: 20px 50px; background: #e74c3c; color: white; border: none;
+            border-radius: 50px; cursor: pointer; font-size: 24px; font-weight: bold;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 9000; transition: transform 0.2s;
+        }
+        #startBtn:active { transform: translate(-50%, -50%) scale(0.95); }
+
         .sidebar {
-            height: 100%; width: 0; position: fixed; z-index: 10000; top: 0; left: 0;
+            height: 100%; width: 0; position: fixed; z-index: 10001; top: 0; left: 0;
             background-color: rgba(0, 0, 0, 0.95); overflow-x: hidden; transition: 0.5s; padding-top: 60px;
         }
         .sidebar a { padding: 15px 32px; text-decoration: none; font-size: 20px; color: #bbb; display: block; }
         .sidebar .close-btn { position: absolute; top: 10px; right: 25px; font-size: 36px; color: white; cursor: pointer; }
 
-        .main-btn {
-            padding: 20px 50px; background: #e74c3c; color: white; border: none;
-            border-radius: 50px; cursor: pointer; font-size: 24px; font-weight: bold;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 100; transition: transform 0.2s;
-        }
-        .main-btn:active { transform: scale(0.95); }
-
         #gameWrapper {
             display: none; position: fixed; top: 50%; left: 50%;
-            transform: translate(-50%, -50%); z-index: 5000;
+            transform: translate(-50%, -50%); z-index: 9500;
         }
 
         #gameHeader {
@@ -60,18 +63,11 @@
             cursor: pointer; font-weight: bold; border-radius: 5px; font-size: 12px; border: none;
         }
 
-        #limitLine {
-            position: absolute; top: 60px; left: 0; width: 100%; height: 2px;
-            background: rgba(255, 0, 0, 0.4); z-index: 10; pointer-events: none;
-            border-top: 1px dashed red;
-        }
-
         #gameOverOverlay {
             display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9); flex-direction: column; align-items: center;
             justify-content: center; z-index: 11000; text-align: center;
         }
-        #gameOverOverlay h2 { color: #e74c3c; font-size: 36px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
@@ -80,11 +76,11 @@
 
     <div id="mySidebar" class="sidebar">
         <div class="close-btn" onclick="toggleNav()">&times;</div>
-        <a href="#">ANASAYFA</a>
+        <a href="#" onclick="toggleNav()">ANASAYFA</a>
         <a href="https://www.linkedin.com" target="_blank">İLETİŞİM</a>
     </div>
     
-    <button id="startBtn" class="main-btn" onclick="openGame()">OYUNA BAŞLA</button>
+    <button id="startBtn" onclick="openGame()">OYUNA BAŞLA</button>
 
     <div id="gameWrapper">
         <div id="gameHeader">
@@ -93,11 +89,11 @@
             <button class="close-game" onclick="closeGame()">KAPAT X</button>
         </div>
         <div id="gameContainer">
-            <div id="limitLine"></div>
+            <div style="position: absolute; top: 60px; left: 0; width: 100%; height: 2px; background: rgba(255, 0, 0, 0.4); z-index: 10; pointer-events: none; border-top: 1px dashed red;"></div>
             <div id="gameOverOverlay">
-                <h2>OYUN BİTTİ</h2>
+                <h2 style="color: #e74c3c; font-size: 36px; margin-bottom: 20px;">OYUN BİTTİ</h2>
                 <p style="color:white">Skorun: <span id="finalScore">0</span></p>
-                <button class="main-btn" style="font-size: 16px; padding: 15px 30px;" onclick="openGame()">TEKRAR DENE</button>
+                <button class="close-game" style="font-size: 16px; padding: 15px 30px; background: #2ecc71;" onclick="openGame()">TEKRAR DENE</button>
             </div>
             <div id="gameCanvas"></div>
         </div>
@@ -106,16 +102,18 @@
     <script>
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         function playPop() {
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            const osc = audioCtx.createOscillator();
-            const g = audioCtx.createGain();
-            osc.type = 'sine';
-            osc.frequency.setValueAtTime(400, audioCtx.currentTime);
-            osc.frequency.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-            g.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-            osc.connect(g); g.connect(audioCtx.destination);
-            osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+            try {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator();
+                const g = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                g.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                osc.connect(g); g.connect(audioCtx.destination);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+            } catch(e) {}
         }
 
         function toggleNav() {
@@ -123,9 +121,8 @@
             s.style.width = (s.style.width === "250px") ? "0" : "250px";
         }
 
-        let engine, render, runner, score = 0, nextFruitIdx = 0;
-        let isGameOver = false, canDrop = true;
-        const { Engine, Render, Runner, Bodies, Composite, Events, Body } = Matter;
+        let engine, render, runner, score = 0, nextFruitIdx = 0, isGameOver = false, canDrop = true;
+        const { Engine, Render, Runner, Bodies, Composite, Events } = Matter;
 
         const FRUITS = [
             { r: 15, label: '🍓', score: 2, color: '#ff4d4d' },
@@ -143,6 +140,12 @@
         }
 
         function openGame() {
+            if (render) {
+                Render.stop(render);
+                if(runner) Runner.stop(runner);
+                Engine.clear(engine);
+                if(render.canvas) render.canvas.remove();
+            }
             score = 0; isGameOver = false; canDrop = true;
             document.getElementById("scoreVal").innerText = "0";
             document.getElementById("highScore").innerText = localStorage.getItem('highScore') || 0;
@@ -156,9 +159,11 @@
         function closeGame() {
             document.getElementById("gameWrapper").style.display = "none";
             document.getElementById("startBtn").style.display = "block";
-            if(render) {
-                Render.stop(render); Runner.stop(runner);
-                Engine.clear(engine); render.canvas.remove();
+            if (render) {
+                Render.stop(render);
+                if(runner) Runner.stop(runner);
+                Engine.clear(engine);
+                if(render.canvas) render.canvas.remove();
                 render = null;
             }
         }
@@ -167,78 +172,45 @@
             const container = document.getElementById('gameCanvas');
             engine = Engine.create();
             engine.world.gravity.y = 1.2;
-
             render = Render.create({
                 element: container,
                 engine: engine,
-                options: { 
-                    width: container.clientWidth, 
-                    height: container.clientHeight, 
-                    wireframes: false, 
-                    background: 'transparent' 
-                }
+                options: { width: container.clientWidth, height: container.clientHeight, wireframes: false, background: 'transparent' }
             });
 
             const ground = Bodies.rectangle(180, container.clientHeight + 10, 800, 40, { isStatic: true, label: 'wall', render: { fillStyle: '#2c3e50' } });
             const left = Bodies.rectangle(-10, 250, 25, 1000, { isStatic: true, label: 'wall' });
             const right = Bodies.rectangle(container.clientWidth + 10, 250, 25, 1000, { isStatic: true, label: 'wall' });
-            
             Composite.add(engine.world, [ground, left, right]);
 
             function drop(e) {
                 if(isGameOver || !canDrop) return;
-                
                 canDrop = false;
                 const rect = render.canvas.getBoundingClientRect();
                 const clientX = (e.touches ? e.touches[0].clientX : e.clientX);
                 const x = Math.max(25, Math.min(render.canvas.width - 25, clientX - rect.left));
-
                 const f = FRUITS[nextFruitIdx];
-                const fruit = Bodies.circle(x, 25, f.r, {
-                    label: f.label, 
-                    restitution: 0.3, 
-                    friction: 0.1,
-                    isFirstDrop: true,
-                    render: { fillStyle: f.color }
-                });
-                
-                fruit.fruitType = f;
+                const fruit = Bodies.circle(x, 25, f.r, { label: f.label, restitution: 0.3, friction: 0.1, isFirstDrop: true, render: { fillStyle: f.color } });
                 Composite.add(engine.world, fruit);
-                
-                setTimeout(() => { 
-                    canDrop = true; 
-                    updateNextFruit();
-                }, 600);
+                setTimeout(() => { canDrop = true; updateNextFruit(); }, 600);
             }
 
             render.canvas.addEventListener('mousedown', drop);
-            render.canvas.addEventListener('touchstart', (e) => { e.preventDefault(); drop(e); });
+            render.canvas.addEventListener('touchstart', (e) => { e.preventDefault(); drop(e); }, {passive: false});
 
             Events.on(engine, 'collisionStart', (event) => {
                 event.pairs.forEach((pair) => {
                     const { bodyA, bodyB } = pair;
-
                     if (bodyA.label === bodyB.label && bodyA.label !== 'wall' && !bodyA.isMerging && !bodyB.isMerging) {
                         const idx = FRUITS.findIndex(f => f.label === bodyA.label);
                         if (idx !== -1 && idx < FRUITS.length - 1) {
-                            bodyA.isMerging = true; 
-                            bodyB.isMerging = true;
-                            
+                            bodyA.isMerging = true; bodyB.isMerging = true;
                             playPop();
                             const next = FRUITS[idx + 1];
                             score += next.score;
                             document.getElementById("scoreVal").innerText = score;
                             document.getElementById("finalScore").innerText = score;
-
-                            const newX = (bodyA.position.x + bodyB.position.x) / 2;
-                            const newY = (bodyA.position.y + bodyB.position.y) / 2;
-
-                            const upgraded = Bodies.circle(newX, newY, next.r, {
-                                label: next.label,
-                                render: { fillStyle: next.color }
-                            });
-                            upgraded.fruitType = next;
-
+                            const upgraded = Bodies.circle((bodyA.position.x + bodyB.position.x)/2, (bodyA.position.y + bodyB.position.y)/2, next.r, { label: next.label, render: { fillStyle: next.color } });
                             Composite.remove(engine.world, [bodyA, bodyB]);
                             Composite.add(engine.world, upgraded);
                         }
@@ -248,31 +220,24 @@
 
             Events.on(engine, 'afterUpdate', () => {
                 if (isGameOver) return;
-                
                 Composite.allBodies(engine.world).forEach(body => {
-                    // Sadece belli bir süredir sahnede olan ve yukarıda duran meyveleri kontrol et
                     if (!body.isStatic && body.position.y < 60 && body.velocity.y < 0.1 && !body.isFirstDrop) {
                         isGameOver = true;
                         document.getElementById("gameOverOverlay").style.display = "flex";
-                        let hs = localStorage.getItem('highScore') || 0;
+                        let hs = parseInt(localStorage.getItem('highScore')) || 0;
                         if(score > hs) localStorage.setItem('highScore', score);
                     }
-                    
-                    // Meyve atıldıktan sonra 'isFirstDrop' durumunu temizle (ilk temas sonrası)
-                    if(body.isFirstDrop && body.position.y > 100) {
-                        body.isFirstDrop = false;
-                    }
+                    if(body.isFirstDrop && body.position.y > 100) body.isFirstDrop = false;
                 });
             });
 
             Events.on(render, 'afterRender', () => {
                 const ctx = render.context;
+                if(!ctx) return;
                 Composite.allBodies(engine.world).forEach(body => {
-                    if (body.label !== 'wall') {
-                        const radius = body.circleRadius;
-                        ctx.font = `${radius * 1.4}px Arial`;
-                        ctx.textAlign = 'center';
-                        ctx.textBaseline = 'middle';
+                    if (body.label && body.label !== 'wall') {
+                        ctx.font = `${body.circleRadius * 1.4}px Arial`;
+                        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
                         ctx.fillText(body.label, body.position.x, body.position.y);
                     }
                 });
