@@ -283,5 +283,42 @@
             Runner.run(runner, engine);
         }
     </script>
+function drop(e) {
+    // Eğer oyun bittiyse, kilitliyse veya butonlara tıklandıysa işlemi durdur
+    if (isGameOver || !canDrop) return;
+    if (e.target.tagName === 'BUTTON') return;
+
+    // Mobilde çift tıklama olayını engelle
+    if (e.cancelable) e.preventDefault();
+    e.stopImmediatePropagation();
+
+    canDrop = false; // Hemen kilitle
+
+    const rect = render.canvas.getBoundingClientRect();
+    const clientX = (e.touches ? e.touches[0].clientX : e.clientX);
+    const x = Math.max(25, Math.min(render.canvas.width - 25, clientX - rect.left));
+
+    const f = FRUITS[nextFruitIdx];
+    const fruit = Bodies.circle(x, 25, f.r, {
+        label: f.label, 
+        restitution: 0.3, 
+        isFirstDrop: true,
+        render: { fillStyle: f.color }
+    });
+    
+    fruit.render.text = { content: f.label, size: f.r * 1.3 };
+    Composite.add(engine.world, fruit);
+    
+    updateNextFruit();
+
+    // 600ms saniye sonra tekrar atışa izin ver (Hızlı atma sorununu çözer)
+    setTimeout(() => {
+        canDrop = true;
+    }, 600);
+}
+
+// Olay dinleyicileri (Passive: false özelliği önemlidir)
+render.canvas.addEventListener('mousedown', drop);
+render.canvas.addEventListener('touchstart', drop, { passive: false });
 </body>
 </html>
